@@ -60,3 +60,31 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 
 ### Let's build modern C++ the practical way — one project at a time.
+
+
+## Project List
+
+### Beginner Level — Core Foundations & Intro Features 
+
+* [Serial Port Monitor](SerialPortMonitor/README.md)
+* [Basic Calculator](BasicCalculator/README.md)
+* [Digital Clock](DigitalClock/README.md)
+* [Simple Paint Board](SimplePaintBoard/README.md)
+* [LAN Chat Tool](LANChatTool/README.md)
+* [File Transfer over Wi‑Fi](FileTransferWiFi/README.md)
+* [Local Password Vault](LocalPasswordVault/README.md)
+* [Network Ping Tool](NetworkPingTool/README.md)
+* [Note Keeper](NoteKeeper/README.md)
+* [Basic OTA Server Client](BasicOTAServerClient/README.md)
+
+### Intermediate Level — Multiple Systems & Moderate Complexity
+
+* [Secure Chat Client](SecureChatClient/README.md)
+
+
+### AI‑Powered Level — Machine Learning & Intelligent Features
+
+
+
+### Advanced Level — Large‑Scale, Multi‑Feature, High‑Complexity
+
