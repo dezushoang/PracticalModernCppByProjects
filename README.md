@@ -80,11 +80,48 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ### Intermediate Level — Multiple Systems & Moderate Complexity
 
 * [Secure Chat Client](SecureChatClient/README.md)
-
+* [Weather Dashboard](WeatherDashboard/README.md)
+* [Embedded Sensor Calibrator](EmbeddedSensorCalibrator/README.md)
+* [Firewall Rule Manager](FirewallRuleManager/README.md)
+* [Password Strength Analyzer](PasswordStrengthAnalyzer/README.md)
+* [Network Port Scanner](NetworkPortScanner/README.md)
+* [Remote Logger Dashboard](RemoteLoggerDashboard/README.md)
+* [Encrypted File Sync](EncryptedFileSync/README.md)
+* [Network Bandwidth Monitor](NetworkBandwidthMonitor/README.md)
+* [OTP Authenticator](OTPAuthenticator/README.md)
+* [IoT Sensor Dashboard](IoTSensorDashboard/README.md)
+* [Firmware Updater Tool](FirmwareUpdaterTool/README.md)
+* [OTA Scheduler](OTAScheduler/README.md)
+* [OTA Rollback Manager](OTARollbackManager/README.md)
+* [OTA Analytics Dashboard](OTAAnalyticsDashboard/README.md)
 
 ### AI‑Powered Level — Machine Learning & Intelligent Features
 
-
+* [Face Detection Camera App](FaceDetectionCameraApp/README.md)
+* [Object Recognition Inventory](ObjectRecognitionInventory/README.md)
+* [Handwriting Recognition Scanner](HandwritingRecognitionScanner/README.md)
+* [Speech‑to‑Text Pad](SpeechToTextPad/README.md)
+* [Text‑to‑Speech Reader](TextToSpeechReader/README.md)
+* [AI Image Classifier](AIImageClassifier/README.md)
+* [AI Chatbot Desktop](AIChatbotDesktop/README.md)
+* [Emotion Detection via Webcam](EmotionDetectionWebcam/README.md)
+* [Smart Meeting Transcriber](SmartMeetingTranscriber/README.md)
+* [AI Code Reviewer](AICodeReviewer/README.md)
+* [Email Sorter AI](EmailSorterAI/README.md)
+* [AI Music Recommender](AIMusicRecommender/README.md)
+* [Real‑Time Translator](RealTimeTranslator/README.md)
+* [AI Image Colorizer](AIImageColorizer/README.md)
+* [Document Summarizer](DocumentSummarizer/README.md)
 
 ### Advanced Level — Large‑Scale, Multi‑Feature, High‑Complexity
 
+* [Intrusion Detection Dashboard](IntrusionDetectionDashboard/README.md)
+* [Mesh Network Visualizer](MeshNetworkVisualizer/README.md)
+* [Cloud Backup Client (Encrypted AI Dedup)](CloudBackupClient/README.md)
+* [Bluetooth Device Manager AI](BluetoothDeviceManagerAI/README.md)
+* [Secure Remote Shell With AI Assist](SecureRemoteShellWithAIAssist/README.md)
+* [Home Automation Suite With AI Predictive Control](HomeAutomationSuiteWithAIPredictiveControl/README.md)
+* [RFID Access Control + Anomaly Detection](RFIDAccessControlAnomalyDetection/README.md)
+* [Camera Surveillance + Object Tracking](CameraSurveillanceObjectTracking/README.md)
+* [OTA Secure Diff Patcher](OTASecureDiffPatcher/README.md)
+* [OTA Global Fleet Manager](OTAGlobalFleetManager/README.md)
