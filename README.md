@@ -66,8 +66,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ### Beginner Level — Core Foundations & Intro Features 
 
-* [Serial Port Monitor](SerialPortMonitor/README.md)
-* [Basic Calculator](BasicCalculator/README.md)
+* [CRC Calculator](BasicCalculator/README.md)
 * [Digital Clock](DigitalClock/README.md)
 * [Simple Paint Board](SimplePaintBoard/README.md)
 * [LAN Chat Tool](LANChatTool/README.md)
@@ -76,6 +75,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 * [Network Ping Tool](NetworkPingTool/README.md)
 * [Note Keeper](NoteKeeper/README.md)
 * [Basic OTA Server Client](BasicOTAServerClient/README.md)
+* [Serial Port Monitor](SerialPortMonitor/README.md)
 
 ### Intermediate Level — Multiple Systems & Moderate Complexity
 
