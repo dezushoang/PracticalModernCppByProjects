@@ -13,8 +13,12 @@ This project develops a lightweight, real‑time serial data monitor that connec
 ---
 
 ## **2. Functional Requirements**
-
 ### **2.1 Serial Communication**
+- **UART frame**:
+  - Per‑byte UART frame (idle high, LSB first):
+    ```
+    Idle(1) ─ Start(0) ─ D0 ─ D1 ─ D2 ─ D3 ─ D4 ─ D5 ─ D6 ─ D7 ─ [Parity?] ─ Stop(1[,1]) ─ Idle(1)...
+    ```
 - **Protocol**: UART, 9600 to 115200 baud. Defaults: 8N1, no flow control. User‑configurable: Parity [None, Even, Odd]; Stop bits [1, 2]; Flow control [None, RTS/CTS (hardware), XON/XOFF (software)].
 - **Library**: Boost.Asio (async mode with C++23 coroutines).
 - Detect available serial ports and list them in GUI.
@@ -49,7 +53,7 @@ This project develops a lightweight, real‑time serial data monitor that connec
   - Zoom and pan to review history.
   - Data decimation for rendering when sample count exceeds threshold to maintain frame rate.
 - **Connection Setup Panel**:
-  - Dropdown to select serial port (labels from `/dev/serial/by-id`).
+  - Dropdown to select serial port.
   - Dropdown to select baud rate (9600 to 115200).
   - Connect/Disconnect button.
   - Connection status indicator: Green when connected, Gray when disconnected.

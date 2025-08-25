@@ -1,0 +1,110 @@
+@startuml sequence
+title Serial Port Monitor – Architecture Sequence
+autonumber
+skinparam shadowing false
+
+actor User
+participant "UI Controller\n(ImGui • UI thread)" as UI
+participant "IAppController\n(Core)" as IApp
+participant "IDataQuery\n(Core)" as IData
+participant "Port Enumerator\n(Adapter)" as Enum
+participant "Connection State Machine (CSM)\n(Core • I/O thread)" as CSM
+participant "Serial Adapter\n(Required Port)" as SerialAd
+participant "Scheduler\n(Adapter)" as Sched
+participant "Framer\n(Core • I/O thread)" as Framer
+participant "Parser\n(Core • I/O thread)" as Parser
+participant "HistoryBuffer\n(Core)" as Hist
+participant "Metrics\n(Core)" as Metrics
+participant "Log Sink (CSV)\n(Adapter • Logger thread)" as Log
+
+== Port discovery ==
+User -> UI: Open Connection panel\nRefresh ports
+UI -> Enum: enumerate()
+Enum --> UI: { PortInfo[label,device] } (sorted)
+
+== Connect ==
+User -> UI: Select port (by-id) + params\nClick Connect
+UI -> IApp: connect(port, params)
+IApp -> CSM: begin_connect(port, params)
+CSM -> SerialAd: open(device, baud, parity, stop, flow)
+alt open ok
+  SerialAd --> CSM: opened
+  CSM -> Metrics: state=Connected
+  CSM --> UI: Connected
+else open error
+  SerialAd --> CSM: error(code)
+  CSM -> Metrics: state=Disconnected\nerr=code
+  CSM -> Sched: schedule_backoff(t)
+  Sched --> CSM: backoff elapsed
+  CSM -> SerialAd: retry open(...)
+end
+
+== Streaming (I/O thread) ==
+loop while Connected
+  SerialAd -> CSM: async_read_some(bytes)
+  CSM -> Framer: deliver(bytes)
+  loop for each ';' delimited message
+    Framer -> Parser: message
+    alt valid CSV (MCU_Timestamp, s1, s2)
+      Parser -> Hist: append(record)
+      Parser -> Metrics: incr(msg_count)\nupdate rate (1s avg)
+      Parser -> Log: enqueue(record)
+    else parse error
+      Parser -> Metrics: incr(parse_errors)
+    end
+  end
+end
+
+== Backpressure on logger queue ==
+opt queue size >= N (default 50k)
+  Log -> Metrics: incr(drops)\n(policy: drop_oldest by default)
+end
+
+== Render loop (UI thread) ==
+loop every frame (~16.7 ms)
+  UI -> IData: get_metrics()
+  IData --> UI: MetricsView
+  UI -> IData: get_snapshot(window=60s)
+  IData -> Hist: snapshot(60s)
+  Hist --> IData: Snapshot
+  IData --> UI: Snapshot
+  UI -> UI: decimate if samples > threshold\n(min/max per pixel bucket)
+  UI -> UI: render 2 charts + stats
+end
+
+== Logging (Logger thread) ==
+loop line-buffered OR every N=100
+  Log -> Log: write batch
+  Log -> Log: flush()
+end
+opt disk full / write error
+  Log -> Metrics: set logging_error\nlogging=disabled
+end
+
+== Pause plotting ==
+opt user toggles pause
+  User -> UI: Pause Plotting = ON
+  UI -> IApp: pause_plotting(true)
+  note over UI
+  Rendering freezes; ingest & logging continue.
+  end note
+end
+
+== Reconnect on I/O error ==
+alt device unplug / read error
+  SerialAd --> CSM: error(disconnected)
+  CSM -> Metrics: state=Reconnecting
+  CSM -> SerialAd: close()
+  CSM -> Sched: backoff then reopen
+  Sched --> CSM: timer fired
+  CSM -> SerialAd: open(...)
+  alt reopen ok
+    SerialAd --> CSM: opened
+    CSM -> Metrics: state=Connected
+  else still failing
+    SerialAd --> CSM: error
+    CSM -> Sched: reschedule backoff (exponential)
+  end
+end
+
+@enduml

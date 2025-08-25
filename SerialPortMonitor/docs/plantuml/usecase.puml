@@ -1,0 +1,29 @@
+@startuml usecase
+left to right direction
+actor User
+actor "MCU (Serial Device)" as MCU
+actor "File System" as FS
+
+rectangle "Serial Port Monitor" {
+  usecase "Refresh & Select Port\n(/dev/serial/by-id)" as UC_Select
+  usecase "Configure Serial Params\n(baud, parity, stop, flow)" as UC_Config
+  usecase "Connect / Disconnect" as UC_Connect
+  usecase "Auto Reconnect\n(with backoff)" as UC_Reconnect
+  usecase "View Charts\n(2 panels, zoom/pan)" as UC_View
+  usecase "Pause Plotting" as UC_Pause
+  usecase "Enable Logging\n(select directory)" as UC_Log
+  usecase "View Metrics\n(msg/s, errors, drops)" as UC_Metrics
+}
+
+User --> UC_Select
+User --> UC_Config
+User --> UC_Connect
+User --> UC_View
+User --> UC_Pause
+User --> UC_Log
+User --> UC_Metrics
+
+MCU --> UC_Connect
+UC_Reconnect .u. UC_Connect : <<extend>>
+UC_Log --> FS
+@enduml

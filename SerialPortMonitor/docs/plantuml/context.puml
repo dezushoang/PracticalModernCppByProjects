@@ -1,0 +1,16 @@
+@startuml context
+skinparam shadowing false
+left to right direction
+
+actor User
+node "MCU" as MCU
+node "File System" as FS
+
+rectangle "Serial Port Monitor" as APP
+
+User --> APP : GUI actions
+MCU --> APP : Serial data
+APP --> FS : CSV logs
+FS --> APP : Load/Save config
+
+@enduml

@@ -1,0 +1,95 @@
+@startuml concurrency
+title Concurrency and Threads
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam componentStyle rectangle
+skinparam defaultTextAlignment center
+
+' Styles
+skinparam rectangle {
+  BackgroundColor<<thread>> #E6F7FF
+  BorderColor<<thread>> #3399CC
+}
+skinparam rectangle {
+  BackgroundColor<<queue>> #F5F5F5
+  BorderColor<<queue>> #888888
+}
+
+' External source
+cloud "MCU (Serial Device)\n/dev/tty*" as MCU
+
+' Threads
+rectangle "GUI Thread\n(main)" <<thread>> as GUI {
+  component "UI Controller" as UI
+  component "Renderer" as R
+  component "Front Snapshot\n(read-only)" as Front
+}
+
+rectangle "I/O Thread" <<thread>> as IO {
+  component "Connection State Machine\n(CSM)" as CSM
+  component "Serial Adapter" as SA
+  component "Framer" as FR
+  component "Parser" as PAR
+  component "Back Snapshot\n(writer)" as Back
+  component "Metrics" as MET
+}
+
+rectangle "Logger Thread" <<thread>> as LOG {
+  component "Log Sink (CSV)" as CSV
+}
+
+' Bounded queue between threads
+rectangle "SPSC Queue\n(I/O → Logger)" <<queue>> as Q
+
+' Data path (I/O thread)
+MCU --> SA
+SA --> FR
+FR --> PAR
+PAR --> Back
+PAR --> MET
+PAR --> Q
+
+' Logger thread path
+Q --> CSV
+
+' GUI reads immutable snapshot
+UI --> Front
+UI --> R : render charts + metrics
+
+' Cross-thread control paths
+UI --> CSM : commands (connect,\nparams, pause, logging)\npost to I/O
+Back ..> Front : atomic swap\non frame boundary
+
+' Notes
+note right of Q
+Bounded capacity (e.g., 50k).
+On overflow: drop-oldest.
+Metrics.drops++.
+end note
+
+note right of Front
+Immutable. Read by GUI only.
+end note
+
+note right of Back
+Written by I/O only.
+Swapped atomically to Front.
+end note
+
+note right of CSM
+Open/close/configure serial.
+Reconnect with backoff.
+Updates Metrics.state.
+end note
+
+legend right
+Threads:
+- GUI: window, UI, renderer, decimation
+- I/O: serial, framing, parsing, history, metrics
+- Logger: CSV batching and flush policy (line or every N=100)
+
+All disk I/O only on Logger thread.
+No blocking on GUI path.
+end legend
+@enduml

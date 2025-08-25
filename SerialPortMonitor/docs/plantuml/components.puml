@@ -1,0 +1,56 @@
+@startuml components
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+package "Serial Port Monitor" {
+  package "Core (Domain)" as CorePkg {
+    portout "IAppController" as IAppCtrl
+    portout "IDataQuery"     as IDataQry
+    portin  "ISerialPort"    as ISer
+    portin  "IPortEnumerator" as IEnum
+    portin  "ILogSink"       as ILog
+    portin  "IClock"         as IClk
+    portin  "IConfigStore"   as ICfg
+    portin  "IScheduler"     as ISched
+    component "Framer" as Framer
+    component "Parser" as Parser
+    component "History Buffer" as Hist
+    component "Decimator" as Decim
+    component "Metrics" as Metrics
+    component "Connection State Machine" as CSM
+
+  }
+
+  package "Adapters" as AdapterPkg {
+    component "UI Controller" as UI
+    component "Serial Adapter" as SerialAd
+    component "Port Enumerator" as Enumerator
+    component "Log Sink (CSV)" as LogSink
+    component "System Clock" as SysClock
+    component "Config Store" as CfgStore
+    component "Scheduler" as Sched
+  }
+}
+
+
+' Bind drivers/adapters to ports
+UI --> IAppCtrl
+UI <-- IDataQry
+SerialAd --> ISer
+Enumerator <-- IEnum
+LogSink  <-- ILog
+SysClock  <-- IClk
+CfgStore  <-- ICfg
+Sched    <-- ISched
+
+' External systems outside adapter ring
+node "MCU (Serial Device)" as MCU
+database "File System" as FS
+node "Display" as DISP
+
+' Bind external systems to ports
+MCU --> SerialAd
+FS <-- LogSink
+FS <-- CfgStore
+DISP <--> UI
+@enduml
