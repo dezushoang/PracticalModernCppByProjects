@@ -2,7 +2,7 @@
 
 Author: Dezus  
 Version: 1.0  
-Status: Released  
+Status: Draft  
 Scope: Desktop GUI app for CRC calculation (Linux-first), implemented with C++23 + Qt 6, MVVM.
 
 References:
@@ -33,9 +33,9 @@ Key external interfaces:
 - XDG config directory (~/.config/CrcCalculator).
 
 ## 4. Solution Strategy
-- MVVM with Qt: Views (Qt Widgets/QML), ViewModels (QObject with properties/signals), Models/Services (pure C++ or Qt-enabled).
+- MVVM with Qt: Views (Qt Widgets, chosen for smaller AppImage and simpler desktop integration), ViewModels (QObject with properties/signals), Models/Services (pure C++ or Qt-enabled).
 - CRC Engine: Table-driven fast path (8/16/32/64, 256-entry tables) + bitwise fallback for width 1–64. Reflection controls per algorithm.
-- Streaming: FileProcessor reads in chunks (e.g., 1–8 MiB), updates CRC incrementally, emits progress via signals, supports cancel via atomic flag.
+- Streaming: FileProcessor reads in chunks (default 2 MiB; configurable 1–8 MiB), updates CRC incrementally, emits progress via signals, supports cancel via atomic flag.
 - Concurrency: Single GUI thread + worker threads (QThreadPool/QtConcurrent) for file processing; progress marshaled to GUI thread.
 - Validation: Strict parameter and input validation; actions disabled until valid.
 - Persistence: JSON files under XDG; tolerant readers preserving unknown fields.
@@ -89,10 +89,23 @@ Diagram: diagrams/threads.puml
 
 ## 9. Cross-cutting Concepts
 - Validation and Error Reporting: Typed error codes mapped to user-friendly messages; inline validation disables actions until fixed.
-- Data formatting: Hex upper/lower case switch; binary and decimal outputs; width-aware masking.
+- Data formatting (locked rules):
+  - Hex: zero-pad to ceil(width/4) digits; casing toggle applies to result display only (parameters accept mixed case but normalized internally).
+  - Binary: zero-pad to exactly `width` bits.
+  - Decimal: display as unsigned integer; no thousands separators.
+  - All numeric outputs represent the post-xorOut value; presentation only.
 - Logging: Debug build logs to console; optional rolling file logger in diagnostics pane.
 - Internationalization-ready: Strings externalized; default en.
 - Accessibility: Focus traversal, high-contrast palette.
+
+## 9.1 Cancellation Contract
+- A job exposes an atomic `cancelRequested` flag; the FileProcessor checks this flag after each read/compute chunk.
+- Default chunk size is 2 MiB; configurable (1–8 MiB). With this granularity and UI throttling, cancellation is honored within ≤200 ms under typical conditions.
+- On cancel:
+  - Stop reading further data and abort compute loop promptly.
+  - Emit a `cancelled` completion signal (distinct from error).
+  - Ensure resources (file handles, buffers) are released.
+  - UI disables actions tied to the in-flight job until final signal is received, then re-enables appropriately.
 
 ## 10. Architectural Decisions (Summary)
 - AD-1 MVVM with Qt vs MVC/MVP: MVVM aligns with Qt properties/bindings; reduces glue code.
