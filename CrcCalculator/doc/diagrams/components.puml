@@ -1,0 +1,77 @@
+@startuml Components
+title Component Structure — MVVM + Services
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+package UI {
+  [MainWindow / Views] <<QtView>>
+}
+
+package ViewModels {
+  [MainViewModel] <<VM>>
+  [ParametersVM] <<VM>>
+  [TextInputVM] <<VM>>
+  [FileJobsVM] <<VM>>
+  [ResultsVM] <<VM>>
+}
+
+package Domain_Services {
+  [CrcEngine] <<Service>>
+  [CrcTable] <<Service>>
+  [ByteParsers] <<Lib>>
+  [PresetsProvider] <<Service>>
+  [ProfileStore] <<Service>>
+  [SettingsStore] <<Service>>
+  [HistoryStore] <<Service>>
+  [FileProcessor] <<Service>>
+  [ReportWriter] <<Service>>
+}
+
+package Infra {
+  [JSON Serializer] <<Lib>>
+  [XDG Paths] <<Lib>>
+  [Logging] <<Lib>>
+}
+
+UI -down-> [MainViewModel]
+[MainViewModel] -down-> [ParametersVM]
+[MainViewModel] -down-> [TextInputVM]
+[MainViewModel] -down-> [FileJobsVM]
+[MainViewModel] -down-> [ResultsVM]
+
+[ParametersVM] --> [PresetsProvider]
+[ParametersVM] --> [ProfileStore]
+[ParametersVM] --> [SettingsStore]
+
+[TextInputVM] --> [ByteParsers]
+[TextInputVM] --> [CrcEngine]
+
+[FileJobsVM] --> [FileProcessor]
+[FileProcessor] --> [CrcEngine]
+
+[ResultsVM] --> [ReportWriter]
+[MainViewModel] --> [HistoryStore]
+
+[ProfileStore] --> [JSON Serializer]
+[SettingsStore] --> [JSON Serializer]
+[HistoryStore] --> [JSON Serializer]
+[ProfileStore] --> [XDG Paths]
+[SettingsStore] --> [XDG Paths]
+[HistoryStore] --> [XDG Paths]
+
+[CrcEngine] --> [CrcTable]
+[ReportWriter] --> [JSON Serializer] : CSV/Plain text (no JSON), optional
+
+[MainViewModel] ..> [Logging]
+[FileProcessor] ..> [Logging]
+[CrcEngine] ..> [Logging]
+
+note bottom of [FileProcessor]
+- Chunked I/O
+- Progress/ETA
+- Cancel support
+- Runs on worker threads
+end note
+
+@enduml

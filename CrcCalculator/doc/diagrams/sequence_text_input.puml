@@ -1,0 +1,25 @@
+@startuml SeqText
+title Sequence — Live Text Recalculation
+
+actor User
+participant "View\n(TextArea)" as View
+participant "TextInputVM" as Tvm
+participant "ByteParsers" as Parse
+participant "CrcEngine" as Crc
+participant "ResultsVM" as Rvm
+
+User -> View : Type text
+View -> Tvm : onTextChanged(rawText, mode)
+Tvm -> Parse : parse(rawText, mode)
+Parse --> Tvm : ParsedBytes | Error
+
+alt Valid input
+  Tvm -> Crc : compute(parsedBytes, params)
+  Crc --> Tvm : crcValue
+  Tvm -> Rvm : update(crcValue, parsedBytes)
+  Rvm -> View : updateOutput(hex/bin/dec)\nupdateMatch(expected)
+else Invalid input
+  Tvm -> View : showValidationError\n(byte count disabled)
+end
+
+@enduml

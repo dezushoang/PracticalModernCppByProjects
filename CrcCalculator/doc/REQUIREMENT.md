@@ -3,7 +3,8 @@
 ## 1. Overview
 A desktop GUI tool to compute and verify CRC checksums for text and files. Supports common CRC presets (CRC‑8/16/32/64) and custom parameterization (polynomial, width, init, reflect in/out, xor‑out). Provides live recalculation, drag‑and‑drop files, streaming for large inputs with progress and cancel, and import/export of CRC profiles.
 
-Primary target: Linux desktop. Architecture: MVVM.
+Primary target: Linux desktop.  
+Architecture: MVVM.  
 
 ## 2. Goals
 - Accurate CRC computation for configurable algorithms.
@@ -11,7 +12,7 @@ Primary target: Linux desktop. Architecture: MVVM.
 - Simple, responsive UI with immediate feedback and validation.
 - Easy reuse of CRC settings via presets and user profiles.
 
-Out of scope (v1):
+Out of scope:
 - Network integrations, auto-update, telemetry (optional, disabled by default).
 - Non-CRC hash algorithms (MD5/SHA/etc.).
 
@@ -24,10 +25,14 @@ Out of scope (v1):
 4.1 CRC Calculation
 - Input sources:
   - Text input area (treated as bytes; UTF‑8 by default).
+    text input supports format selector: String | Hex | Binary
+    - String: UTF‑8 → bytes (default).
+    - Hex: parse hex pairs → bytes; accept spaces/underscores and optional 0x; require even digit count; invalid chars flagged.
+    - Binary: parse 0/1 → bytes (MSB‑first); accept spaces/underscores; require bit count multiple of 8; invalid chars flagged.
+    - Live recalculation occurs only when input is valid; show parsed byte count.
   - File(s) via file picker and drag‑and‑drop.
 - Output formats: Hex (uppercase/lowercase), Binary, Decimal.
 - Live recalculation while typing in text mode.
-- Expected checksum field to compare and show Match/No Match.
 
 4.2 Algorithms and Presets
 
@@ -50,7 +55,7 @@ Out of scope (v1):
   - Table‑driven fast path for common widths (8/16/32/64) with 256‑entry tables.
   - Bitwise fallback for any width 1–64.
 - Validation
-  - poly, init, xorOut must fit in width bits; reject if value ≥ 1<<width.
+  - poly, init, xorOut must fit in width bits; reject if value ≥ 1 << width (This mean the value is out of width size).
   - width outside 1–64 is invalid.
   - When editing hex fields, accept optional 0x prefix; ignore underscores; enforce width.
 
@@ -113,7 +118,7 @@ Out of scope (v1):
 - Main layout:
   - Left: Input panel (Text area with byte count; File picker + DnD zone; Recent items).
   - Right: Parameters (Preset dropdown; custom params editor with validation).
-  - Bottom/Sidebar: Results (Hex/Bin/Dec tabs), Expected vs Actual indicator, progress bar, actions (Copy, Save Report).
+  - Bottom/Sidebar: Results (Hex/Bin/Dec tabs), progress bar, actions (Copy, Save Report).
 - Menu/Toolbar:
   - File: Open, Save Report, Import Profiles, Export Profiles, Exit.
   - Edit: Copy, Clear, Preferences.

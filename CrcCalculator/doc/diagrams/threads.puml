@@ -1,0 +1,25 @@
+@startuml Threads
+title Thread/Concurrency Model
+
+skinparam shadowing false
+
+component "GUI Thread" as gui <<Thread>>
+component "Worker Pool\n(QThreadPool)" as pool <<ThreadPool>>
+component "FileProcessor Job" as job <<Runnable>>
+component "Disk I/O" as io <<Resource>>
+
+gui -down-> pool : enqueue(job)
+pool -down-> job : run()
+job -down-> io : read chunks
+job -right-> gui : progress(bytes, total)\n(queued signal)
+job -right-> gui : completed / error / cancelled\n(queued signal)
+gui -left-> job : cancel flag set\n(atomic<bool>)
+
+note right of job
+- Loop: while !cancel
+- Read chunk (QFile)
+- Update CRC state
+- Emit throttled progress
+end note
+
+@enduml

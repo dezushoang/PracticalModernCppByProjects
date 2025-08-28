@@ -1,0 +1,24 @@
+@startuml Context
+title System Context — CRC Calculator (GUI)
+
+skinparam shadowing false
+skinparam rectangle {
+  BackgroundColor White
+}
+
+actor User as user
+rectangle "OS/Window System\n(Qt Platform)" as os
+rectangle "File System" as fs
+rectangle "Clipboard" as clip
+rectangle "XDG Config (~/.config/CrcCalculator)" as xdg
+
+rectangle "CrcCalculator (Desktop App)" as app {
+}
+
+user --> app : Interact (keyboard/mouse, DnD)
+app --> fs : Read files, Save reports
+app --> clip : Copy checksum
+app --> xdg : Read/Write settings, profiles, history
+app <-- os : Rendering, events
+
+@enduml

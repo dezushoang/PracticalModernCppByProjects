@@ -1,0 +1,48 @@
+@startuml Timing
+title Timing — Large File Processing (Throughput, Progress, Cancel)
+
+robust "UI Thread" as UI
+robust "Worker Thread" as W
+concise "Disk I/O" as IO
+concise "CrcEngine" as CE
+
+@0
+UI is Idle
+W is Idle
+IO is Idle
+CE is Idle
+
+@10
+UI is "Start Job"
+W is "Init Job"
+IO is "Read chunk"
+CE is Idle
+
+@20
+IO is Idle
+CE is "CRC update"
+
+@30
+UI is "Progress update"
+W is "Emit progress"
+IO is "Read next"
+CE is Idle
+
+@40
+IO is Idle
+CE is "CRC update"
+
+@50
+UI is "Progress update"
+
+@60
+UI is "Cancel pressed"
+W is "Cancel observed"
+IO is Idle
+CE is Idle
+
+@70
+W is "Tear down"
+UI is "Show Cancelled"
+
+@enduml

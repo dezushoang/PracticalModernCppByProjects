@@ -1,0 +1,38 @@
+@startuml SeqFile
+title Sequence — File Streaming with Progress and Cancel
+
+actor User
+participant "View\n(DnD/File Picker)" as View
+participant "FileJobsVM" as Fvm
+participant "FileProcessor\n(Worker)" as Proc
+participant "CrcEngine" as Crc
+participant "ResultsVM" as Rvm
+
+User -> View : Drop/Choose file(s)
+View -> Fvm : addFiles(paths)
+Fvm -> Proc : start(path, params) [enqueue]
+
+loop per chunk
+  Proc -> Proc : read chunk (QFile)
+  Proc -> Crc : update(state, chunk)
+  Crc --> Proc : state'
+  Proc -> Fvm : progress(bytes,total,eta)  <<queued>>
+  Fvm -> Rvm : updateProgress
+  Rvm -> View : render progress
+end
+
+alt Cancel pressed
+  User -> View : Cancel
+  View -> Fvm : cancel(jobId)
+  Fvm -> Proc : set cancel flag (atomic)
+  Proc -> Fvm : cancelled <<queued>>
+  Fvm -> View : show cancelled
+else EOF
+  Proc -> Crc : finalize(state')
+  Crc --> Proc : crcValue
+  Proc -> Fvm : completed(crcValue) <<queued>>
+  Fvm -> Rvm : addResult
+  Rvm -> View : show result (Hex/Bin/Dec, Match)
+end
+
+@enduml

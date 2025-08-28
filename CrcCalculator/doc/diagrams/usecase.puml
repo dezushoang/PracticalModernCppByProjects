@@ -1,0 +1,37 @@
+@startuml UseCases
+title Use Cases — CRC Calculator
+
+left to right direction
+skinparam shadowing false
+
+actor User
+
+usecase "Compute CRC from Text\n(String/Hex/Binary)" as UC_Text
+usecase "Compute CRC from File(s)\n(picker & DnD)" as UC_File
+usecase "Apply Preset" as UC_Preset
+usecase "Save as Profile\n(Manage Profiles)" as UC_Profile
+usecase "Import/Export Profiles\n(JSON)" as UC_ProfileIO
+usecase "Expected vs Actual\n(Match indicator)" as UC_Compare
+usecase "Copy Checksum\n(to Clipboard)" as UC_Copy
+usecase "Save Report\n(Text/CSV)" as UC_Report
+usecase "Cancel Processing" as UC_Cancel
+usecase "Recent Items / History" as UC_History
+usecase "Error Reporting\n(Inline + Dialogs)" as UC_Error
+
+User --> UC_Text
+User --> UC_File
+User --> UC_Preset
+User --> UC_Profile
+User --> UC_ProfileIO
+User --> UC_Compare
+User --> UC_Copy
+User --> UC_Report
+User --> UC_Cancel
+User --> UC_History
+User --> UC_Error
+
+UC_Preset --> UC_Compare : triggers recompute
+UC_Text --> UC_Compare : live recompute
+UC_File --> UC_Compare : after compute
+
+@enduml
