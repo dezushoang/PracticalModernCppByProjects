@@ -1,0 +1,47 @@
+```plantuml
+@startuml ComponentIntegrationWorkflow
+title Component Integration & IT Workflow
+
+actor Developer as Dev
+participant "Contract Tests\n(Schema + ViewModel)" as Contracts
+participant "Repo / PR" as Repo
+participant "CI (PR pipeline)" as CI_PR
+participant "Test Runner" as TR
+participant "CI (Nightly)" as CI_N
+
+Dev -> Contracts: Define/lock interfaces\n(schema, params, errors, events)\nWrite/Update contract tests
+note right of Dev
+- Additive schema/API changes only
+- Preserve unknown JSON fields
+- Deprecations kept and tested
+end note
+
+Dev -> Dev: Implement vertical slice\nEngine -> ViewModel -> Persistence\nbehind feature flag
+Dev -> Repo: Open PR
+
+CI_PR -> TR: Run smoke integration
+TR --> CI_PR: Pass/Fail + logs
+
+alt Fail
+  CI_PR -> Dev: Attach logs, failing seeds,\nminimal repro inputs
+  Dev -> Repo: Fix & push updates
+  CI_PR -> TR: Re-run smoke
+else Pass
+  CI_PR -> Repo: Gate passed (ready to merge)
+  Repo -> CI_N: On merge or nightly trigger
+  CI_N -> TR: Full matrix: large-file, perf,\ncancellation, fault-injection
+  TR --> CI_N: Results + coverage
+  alt Failures
+    CI_N -> Dev: Open issues; block release
+  else All green
+    CI_N -> Repo: Publish artifacts/reports
+  end
+end
+
+legend right
+DoD:
+- Integration tests updated/passing
+- CI failures include artifacts (logs, seeds, repros)
+endlegend
+@enduml
+```

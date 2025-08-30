@@ -1,0 +1,90 @@
+@startsalt CrcCalculatorMainWindown
+title CRC Calculator
+skinparam dpi 140
+skinparam backgroundColor #FFFFFF
+
+{+
+  {* File | Edit | Help }
+  ..
+  {+
+    {^"Input (Left ~660w)"
+      {/ <b>Text | Files | Recent }
+      {
+        == Text mode (TextArea ~80x12)
+        "                                                                                                    "
+        "                                                                                                    "
+        "                                                                                                    "
+        "                                                                                                    "
+        "                                                                                                    "
+        "                                                                                                    "
+        "                                                                                                    "
+        "                                                                                                    "
+        "                                                                                                    "
+        "                                                                                                    "
+        "                                                                                                    "
+        "                                                                                                    "
+        Parsed bytes: 0 | Input format: | (X) String | () Hex | () Binary | [Paste] [Clear]
+        <color:#9a9a9a>Live recalculation only when input is valid
+        ..
+        {^"File picker / Drag & Drop (Dropzone ~660w x 120h)"
+          [Open File…] [Add Files…]
+          "----------------------------------------------------------------------------------------------------"
+          "<color:#9a9a9a>Drag & drop files here to compute per-file CRC"
+          "----------------------------------------------------------------------------------------------------"
+          "Selected:"
+          "- firmware.bin (12.3 MiB) — queued"
+          "- log.txt (2.1 MiB) — queued"
+        }
+        ..
+        {^"Recent items (List ~660w x 120h)"
+          "- /home/user/firmware.bin"
+          "- /home/user/data.img"
+          "- text: 'hello world'"
+          [Clear Recent]
+        }
+      }
+    } |
+    {^"Parameters (Right ~360w)"
+      Preset                     | ^CRC-32/ISO-HDLC^
+      [Apply Preset]             | [Save as Profile]
+      ..
+      Width (1–64)               | " 32            "
+      Polynomial (hex, ≤64b)     | " 0x04C11DB7    "
+      Init (hex)                 | " 0xFFFFFFFF    "
+      [X] Reflect In             | [X] Reflect Out
+      XorOut (hex)               | " 0xFFFFFFFF    "
+      ..
+      <color:#cc0000>Validation: Width within 1–64; poly/init/xorOut fit width; hex accepts 0x and underscores
+      ..
+      {^"Profiles"
+        [Import Profiles…] [Export Profiles…]
+      }
+      ..
+      {^"Self-test"
+        Check("123456789") | "0xCBF43926"
+      }
+    }
+  }
+  ..
+  {/ <b>Hex | Binary | Decimal }
+  {
+    == Results (Bottom ~1000w)
+    "0xDEADBEEF                                   " | ^UPPERCASE^^lowercase^ | [Copy] | [Save Report]
+    ..
+    {^"Per-file results (Table ~1000w x 140h)"
+      "File (path)                                  " | "CRC (Hex)      " | "Actions"
+      "firmware.bin                                  " | "0xA1B2C3D4     " | [Copy]
+      "log.txt                                       " | "0x11223344     " | [Copy]
+      "image.bin                                     " | "0x6C40DF5F…    " | [Copy]
+    }
+    ..
+    {# Progress (~1000w x 32h)
+      "Bytes: 0 / 0  (0%)   ETA: --:--" | Progress [==========                                                  ] | [Cancel]
+    }
+  }
+  --
+  {# Status bar (~1000w x 28h)
+    <&info> Ready | "Idle" | Progress [------] | [Cancel]
+  }
+}
+@endsalt

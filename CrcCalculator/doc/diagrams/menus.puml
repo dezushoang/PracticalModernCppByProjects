@@ -1,0 +1,24 @@
+"""
+Menus (visualizing required commands)
+"""
+@startsalt menusContent
+title Menus — Content (File / Edit / Help)
+skinparam dpi 140
+{+
+  {^"File"
+    [Open]
+    [Save Report]
+    [Import Profiles]
+    [Export Profiles]
+    [Exit]
+  } |
+  {^"Edit"
+    [Copy]
+    [Clear]
+    [Preferences]
+  } |
+  {^"Help"
+    [About]
+  }
+}
+@endsalt
